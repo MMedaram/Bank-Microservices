@@ -34,9 +34,11 @@ This repository contains a set of microservices for a **Banking System** built u
    ```bash
    git clone https://github.com/MMedaram/Bank-Microservices.git
    cd Bank-Microservices
+
 2. **Configure PostgreSQL:**
   Set up a PostgreSQL database for each service.
   Configure the application.yml or application.properties files to point to the correct database and credentials.
+
 3. **Run the Services:**
   Start each service independently:
   Customer Service: mvn spring-boot:run -Dspring-boot.run.profiles=customer
@@ -44,18 +46,20 @@ This repository contains a set of microservices for a **Banking System** built u
   Branch Service: mvn spring-boot:run -Dspring-boot.run.profiles=branch
   API Gateway: mvn spring-boot:run -Dspring-boot.run.profiles=gateway
   Note: Make sure the services are properly configured for each individual service with the correct port and database connection.
+
 4. **Access Swagger UI:**
   You can view the API documentation using Swagger UI at:
+     Customer Service: http://localhost:8082/swagger-ui/
+     Account Service: http://localhost:8083/swagger-ui/
+     Branch Service: http://localhost:8081/swagger-ui/
 
-  Customer Service: http://localhost:8082/swagger-ui/
-  Account Service: http://localhost:8083/swagger-ui/
-  Branch Service: http://localhost:8081/swagger-ui/
 5. **Flyway Database Migration:**
   Flyway will automatically run migrations on application startup for each service. Ensure that all SQL migration files are available in the respective service.
 
 ## **Features:**
-Microservices Architecture: Each service is a standalone Spring Boot application communicating via REST APIs.
-Service Discovery: Services are registered in Eureka for dynamic discovery.
-API Gateway: Zuul API Gateway is used as a central entry point for all services.
-Swagger: Interactive API documentation generated for each service.
-Database Migrations: Flyway is used to handle database schema versioning.
+
+**Microservices Architecture**: Each service is a standalone Spring Boot application communicating via REST APIs.
+**Service Discovery**: Services are registered in Eureka for dynamic discovery.
+**API Gateway**: Zuul API Gateway is used as a central entry point for all services.
+**Swagger**: Interactive API documentation generated for each service.
+**Database Migrations**: Flyway is used to handle database schema versioning.
