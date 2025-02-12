@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: eureka-server
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+  server:
+    eviction-interval-timer-in-ms: 60000  # Eviction check runs every 60s (default is 30s)
+    renewal-percent-threshold: 0.5  # Allows fewer heartbeats before removing instances

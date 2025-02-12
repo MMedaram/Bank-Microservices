@@ -1,0 +1,29 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: branch-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/branch_service_db?user=postgres
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/branch_service_db?user=postgres
+    username: postgres
+    password: root
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 1
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true

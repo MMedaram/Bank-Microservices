@@ -1,0 +1,20 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/MMedaram/config-repo   # Replace with your Git repository URL
+          searchPaths: '{application}'
+          clone-on-start: true  # This option will clone the repo when the server starts
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/   # Assuming Eureka is running at this address
+  instance:
+    prefer-ip-address: true

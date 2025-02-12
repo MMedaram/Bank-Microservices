@@ -1,0 +1,6 @@
+CREATE TABLE branches (
+    id BIGSERIAL PRIMARY KEY,
+    branch_code VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL
+);
