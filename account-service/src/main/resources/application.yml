@@ -28,10 +28,3 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
-
-logging:
-  level:
-    root: INFO
-    com:
-      bank:
-        account: INFO  # Adjust for your package or class
