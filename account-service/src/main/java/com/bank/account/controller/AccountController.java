@@ -44,6 +44,12 @@ public class AccountController {
         return ResponseEntity.ok(accountService.getAllAccounts());
     }
 
+    @GetMapping("/customer/{customerNumber}")
+    @Operation(summary = "Get all accounts by customer")
+    public ResponseEntity<List<Account>> getAllAccountsByCustomerNumber(@PathVariable String customerNumber) {
+        return ResponseEntity.ok(accountService.getAllAccountsByCustomerNumber(customerNumber));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get account by ID")
     public ResponseEntity<Account> getAccountById(@PathVariable Long id) {
@@ -66,6 +72,7 @@ public class AccountController {
 
     /**
      * Get the balance for an account
+     *
      * @param accountNumber Account number for balance enquiry
      * @return Current balance
      */

@@ -1,6 +1,10 @@
 package com.bank.account.service;
 
+import com.bank.account.client.CustomerClient;
+import com.bank.account.client.NotificationClient;
 import com.bank.account.entity.Account;
+import com.bank.account.entity.CustomerDto;
+import com.bank.account.entity.EmailRequestDto;
 import com.bank.account.entity.Transaction;
 import com.bank.account.entity.TransactionType;
 import com.bank.account.exception.AccountNotFoundException;
@@ -10,9 +14,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.bank.account.entity.TransactionType.TRANSFER;
 
 
 @Service
@@ -24,6 +30,12 @@ public class TransactionService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private NotificationClient notificationClient;
+
+    @Autowired
+    private CustomerClient customerClient;
+
     @Transactional
     public Transaction createTransaction(String accountNumber, Double amount, TransactionType transactionType, String description) {
         // Find account by account number
@@ -33,7 +45,7 @@ public class TransactionService {
         Transaction transaction = new Transaction();
         transaction.setAccountNumber(accountNumber);
         transaction.setAmount(amount);
-        transaction.setTransactionType(transactionType);
+        transaction.setTransactionType(String.valueOf(transactionType));
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setDescription(description);
 
@@ -46,9 +58,12 @@ public class TransactionService {
             }
             account.setBalance(account.getBalance() - amount);
         }
-
+        EmailRequestDto requestDto = prepareTransactionEmailRequest(account,transaction);
         accountRepository.save(account);
-        return transactionRepository.save(transaction);
+        Transaction result = transactionRepository.save(transaction);
+        notificationClient.sendEmail(requestDto);
+
+        return result;
     }
 
     @Transactional
@@ -74,7 +89,7 @@ public class TransactionService {
         Transaction transaction = new Transaction();
         transaction.setAccountNumber(sourceAccountNumber);
         transaction.setAmount(amount);
-        transaction.setTransactionType(TransactionType.TRANSFER);
+        transaction.setTransactionType(String.valueOf(TRANSFER));
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setDescription("Transfer from Account " + sourceAccountNumber + " to Account " + destinationAccountNumber);
 
@@ -87,4 +102,27 @@ public class TransactionService {
     }
 
 
+    public List<Transaction> getTransactionByAccountNumberAndDateRange(String accountNumber, LocalDate fromDate, LocalDate toDate) {
+        LocalDateTime fromDateTime = fromDate.atStartOfDay();
+        LocalDateTime toDateTime = toDate.atTime(23,59,59);
+
+        return transactionRepository.getTransactionByAccountNumberAndDateRange(accountNumber,fromDateTime,toDateTime);
+    }
+
+
+    private EmailRequestDto prepareTransactionEmailRequest(Account account, Transaction transaction){
+
+        EmailRequestDto emailRequestDto = new EmailRequestDto();
+
+        emailRequestDto.setAccountNumber(account.getAccountNumber());
+        emailRequestDto.setTransactionType(transaction.getTransactionType());
+        emailRequestDto.setAvailableBalance(String.valueOf(account.getBalance()));
+        emailRequestDto.setAmount(String.valueOf(transaction.getAmount()));
+
+        CustomerDto dto = customerClient.getCustomerByCustomerNumber(account.getCustomerNumber());
+
+        emailRequestDto.setTo(dto.getEmail());
+        emailRequestDto.setCustomerName(dto.getName());
+        return emailRequestDto;
+    }
 }

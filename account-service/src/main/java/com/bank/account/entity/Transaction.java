@@ -31,8 +31,7 @@ public class Transaction {
 
     private Double amount;
 
-    @Enumerated(EnumType.STRING)
-    private TransactionType transactionType;
+    private String transactionType;
 
     private LocalDateTime transactionDate;
     private String description;

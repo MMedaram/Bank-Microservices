@@ -101,4 +101,8 @@ public class AccountService {
                 .map(Account::getBalance)
                 .orElseThrow(() -> new AccountNotFoundException(accountNumber));
     }
+
+    public List<Account> getAllAccountsByCustomerNumber(String customerNumber) {
+        return accountRepository.findAllByCustomerNumber(customerNumber);
+    }
 }

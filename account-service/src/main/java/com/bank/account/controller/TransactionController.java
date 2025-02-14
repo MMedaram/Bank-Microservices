@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -89,7 +91,7 @@ public class TransactionController {
      * @param accountNumber Account number
      * @return Transactions
      */
-    @Operation(summary = "Get transaction by account number",
+    @Operation(summary = "Get transactions by account number",
             description = "This endpoint allows you to retrieve the transaction details for a specific account.",
             responses = {
                     @ApiResponse(responseCode = "200",
@@ -103,6 +105,21 @@ public class TransactionController {
     @GetMapping("/{accountNumber}")
     public List<Transaction> getTransactionByAccountNumber(@PathVariable String accountNumber) {
         return transactionService.getTransactionByAccountNumber(accountNumber);
+    }
+
+
+    /**
+     * Get transactions list by account number, fromDate, toDate
+     *
+     * @param accountNumber , fromDate , toDate
+     * @return Transactions
+     */
+    @Operation(summary = "Get transactions by account number and date range")
+    @GetMapping("/{accountNumber}/{fromDate}/{toDate}")
+    public List<Transaction> getTransactionByAccountNumberAndDateRange(@PathVariable String accountNumber,
+                                                                       @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
+                                                                       @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
+        return transactionService.getTransactionByAccountNumberAndDateRange(accountNumber,fromDate,toDate);
     }
 
 }

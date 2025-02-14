@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Transaction Notification</title>
+</head>
+<body>
+<h2>Hello, <span th:text="${customerName}"></span>!</h2>
+
+<p>Your account <strong th:text="${accountNumber}"></strong> has been
+    <strong th:text="${transactionType == 'CREDIT' ? 'credited' : 'debited'}"></strong>
+    with <strong th:text="${amount}"></strong>.
+</p>
+
+<p>Current Balance: <strong th:text="${availableBalance}"></strong></p>
+<p>Thank you for banking with us!</p>
+</body>
+</html>
