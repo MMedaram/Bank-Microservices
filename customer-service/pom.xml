@@ -13,6 +13,8 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>customer-service</name>
     <description>customer-service for Bank</description>
+    <packaging>war</packaging>
+
     <url/>
     <licenses>
         <license/>

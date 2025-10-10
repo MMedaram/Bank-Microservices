@@ -10,11 +10,12 @@ This repository contains a set of microservices for a **Banking System** built u
 4. **Branch Service** - Manages branch-related details.
 5. **Customer Service** - Manages customer information and relationships.
 6. **Account Service** - Manages accounts (creation, retrieval, balance operations) and transactions (deposits, withdrawals, transfers).
- 
+7. **Notification Service** - Notifies tthe customers while account creation, transactions via mail.
+
 ## Technologies Used:
 
 - **Spring Boot** 3.x
-- **Spring Cloud** (API Gateway, Config Server, Eureka)
+- **Spring Cloud** (API Gateway, Config Server, Eureka,Circuit Breaker ( Resilience4j ))
 - **PostgreSQL** - Database for storing application data
 - **Flyway** - Database migration tool
 - **Feign** - Service-to-service communication
@@ -48,11 +49,11 @@ This repository contains a set of microservices for a **Banking System** built u
 5. **Access Swagger UI:**
   You can view the API documentation using Swagger UI at:
 
-   Customer Service: http://localhost:8082/swagger-ui/
+   Customer Service: http://localhost:<port>/swagger-ui/
 
-   Account Service: http://localhost:8083/swagger-ui/
+   Account Service: http://localhost:<port>/swagger-ui/
 
-   Branch Service: http://localhost:8081/swagger-ui/
+   Branch Service: http://localhost:<port>/swagger-ui/
 
 7. **Flyway Database Migration:**
   Flyway will automatically run migrations on application startup for each service. Ensure that all SQL migration files are available in the respective service.

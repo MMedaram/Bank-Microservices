@@ -10,7 +10,8 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "com.branch")
-public class BranchServiceApplication {
+public class BranchServiceApplication  {
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(BranchServiceApplication.class, args);
@@ -24,5 +25,6 @@ public class BranchServiceApplication {
 						.title(StringUtils.substringBefore(getClass().getSimpleName(), "$"))
 						.version("v1"));
 	}
+
 
 }
