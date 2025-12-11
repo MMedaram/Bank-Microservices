@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial; font-size: 14px;">
+
+<p><strong>Below services are down at time:</strong> {{time}}</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; width: 500px;">
+    <tr style="background-color: #f2f2f2; font-weight: bold;">
+        <th>Service Name</th>
+        <th>IP Address</th>
+    </tr>
+
+    {{rows}}
+
+</table>
+
+<p>Please check at: <a href="{{eurekaUrl}}">{{eurekaUrl}}</a></p>
+
+<p>Thanks,<br/>Bank</p>
+
+</body>
+</html>
