@@ -29,3 +29,11 @@ GRANT ALL ON SCHEMA account TO account;
 
 -- You can also grant usage to other roles if needed
 -- GRANT USAGE ON SCHEMA branch TO some_other_role;
+
+-- =========================
+-- Auth Service Schema
+-- =========================
+CREATE USER auth WITH PASSWORD 'auth';
+CREATE SCHEMA auth AUTHORIZATION auth;
+GRANT ALL ON SCHEMA auth TO auth;
+

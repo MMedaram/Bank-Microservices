@@ -8,8 +8,41 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true   # Enable service discovery-based routing
+          enabled: false   # Enable service discovery-based routing
           lower-case-service-id: true  # Use lowercase service names in URLs
+      routes:
+        - id: api-accounts
+          uri: lb://ACCOUNT-SERVICE
+          predicates:
+            - Path=/api/accounts/**
+          filters:
+            - AuthenticationFilter
+
+        - id: api-customers
+          uri: lb://CUSTOMER-SERVICE
+          predicates:
+            - Path=/api/customers/**
+          filters:
+            - AuthenticationFilter
+
+        - id: api-branches
+          uri: lb://BRANCH-SERVICE
+          predicates:
+            - Path=/api/branches/**
+          filters:
+            - AuthenticationFilter
+
+        - id: api-transactions
+          uri: lb://TRANSACTION-SERVICE
+          predicates:
+            - Path=/api/transactions/**
+          filters:
+            - AuthenticationFilter
+
+        - id: api-auth
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**
 eureka:
   client:
     serviceUrl:
