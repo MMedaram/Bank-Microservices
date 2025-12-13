@@ -6,11 +6,18 @@ This repository contains a set of microservices for a **Banking System** built u
 
 1. **erreka server** -  Is for Service Discovery
 2. **Configuration Server** - Manages configuration properties across microservices using Spring Cloud Config.
-3. **API Gateway** - Acts as a single entry point for all the services.
-4. **Branch Service** - Manages branch-related details.
-5. **Customer Service** - Manages customer information and relationships.
-6. **Account Service** - Manages accounts (creation, retrieval, balance operations) and transactions (deposits, withdrawals, transfers).
-7. **Notification Service** - Notifies tthe customers while account creation, transactions via mail.
+3. **API Gateway** –
+      Provides a unified access layer for the entire microservices ecosystem.
+      Implements centralized concerns such as JWT validation, request routing.  (todo : rate limiting, logging, and correlation tracking).
+      All microservices are kept internal, and external clients interact exclusively through the gateway.
+
+4. **Auth-Service** –
+      Dedicated authentication microservice responsible for issuing and validating JWT tokens.
+      Implements secure login, token generation and integrates with API Gateway for enforcing security across the system.
+5. **Branch Service** - Manages branch-related details.
+6. **Customer Service** - Manages customer information and relationships.
+7. **Account Service** - Manages accounts (creation, retrieval, balance operations) and transactions (deposits, withdrawals, transfers).
+8. **Notification Service** - Notifies tthe customers while account creation, transactions via mail.
 
 ## Technologies Used:
 
