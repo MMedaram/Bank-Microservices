@@ -71,7 +71,7 @@ This repository contains a set of microservices for a **Banking System** built u
 
 **Service Discovery**: Services are registered in Eureka for dynamic discovery.
 
-**API Gateway**: Spring Cloud Gateway API Gateway is used as a central entry point for all services.
+**API Gateway**: Spring Cloud Gateway is used as the central entry point, providing routing and JWT-based security enforcement.
 
 **Swagger**: Interactive API documentation generated for each service.
 
