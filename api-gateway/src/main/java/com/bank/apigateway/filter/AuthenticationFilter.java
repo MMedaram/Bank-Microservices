@@ -41,7 +41,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     //restTemplate.getForObject("http://AUTH-SERVICE/auth/validate?token="+authHeader,String.class);
 
                 }catch (Exception e){
-                    throw new RuntimeException("Un authrized access to application");
+                    throw new RuntimeException("Un authorized access to application");
                 }
             }
             return chain.filter(exchange);

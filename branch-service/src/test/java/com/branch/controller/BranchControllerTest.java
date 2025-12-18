@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @ExtendWith(MockitoExtension.class)
 class BranchControllerTest {
@@ -96,14 +98,14 @@ class BranchControllerTest {
         branch.setBranchCode("B005");
         branch.setName("Branch 5");
 
-        when(branchService.getBranchById(id)).thenReturn(branch);
+        when(branchService.getBranchByBranchCode("B005")).thenReturn(branch);
 
-        ResponseEntity<Branch> response = branchController.getBranchById(id);
+        ResponseEntity<Branch> response = branchController.getBranchByBranchCode("B005");
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
         assertThat(response.getBody()).isSameAs(branch);
 
-        verify(branchService).getBranchById(id);
+        verify(branchService).getBranchByBranchCode("B005");
     }
 
     @Test
@@ -185,10 +187,10 @@ class BranchControllerTest {
 
     @Test
     void serviceException_inGetBranchById_propagates() {
-        Long id = 99L;
-        when(branchService.getBranchById(id)).thenThrow(new RuntimeException("not found"));
+        String branchCode = "B005";
+        when(branchService.getBranchByBranchCode(branchCode)).thenThrow(new RuntimeException("not found"));
 
-        assertThrows(RuntimeException.class, () -> branchController.getBranchById(id));
-        verify(branchService).getBranchById(id);
+        assertThrows(RuntimeException.class, () -> branchController.getBranchByBranchCode(branchCode));
+        verify(branchService).getBranchByBranchCode(branchCode);
     }
 }

@@ -21,6 +21,15 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: 1
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+  devtools:
+    restart:
+      enabled: false
+  cache:
+    type: redis
 
 eureka:
   client:
@@ -28,3 +37,9 @@ eureka:
       defaultZone: http://localhost:8080/eureka/
   instance:
     prefer-ip-address: true
+
+
+logging:
+  level:
+    org.springframework.cache: TRACE
+    org.hibernate.SQL: OFF

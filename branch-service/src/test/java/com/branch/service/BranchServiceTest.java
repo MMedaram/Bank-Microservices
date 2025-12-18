@@ -191,8 +191,16 @@ class BranchServiceTest {
 
     @Test
     void deleteBranch_success() {
+
+        Branch branch = new Branch();
+        branch.setId(1L);
+
+        when(branchRepository.findById(1L)).thenReturn(Optional.of(branch));
+
         branchService.deleteBranch(1L);
-        verify(branchRepository).deleteById(1L);
+
+        verify(branchRepository).findById(1L);
+        verify(branchRepository).delete(branch);
     }
 
     // ----------------------------------------------------------

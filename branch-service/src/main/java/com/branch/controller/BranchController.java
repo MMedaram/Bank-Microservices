@@ -36,10 +36,10 @@ public class BranchController {
         return ResponseEntity.status(HttpStatus.CREATED).body(branchService.createBranch(branchDTO));
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get branch details by ID", description = "Fetch details of the branch by its ID")
-    public ResponseEntity<Branch> getBranchById(@PathVariable Long id) {
-        return ResponseEntity.ok(branchService.getBranchById(id));
+    @GetMapping("/{branchCode}")
+    @Operation(summary = "Get branch details by branchCode", description = "Fetch details of the branch by its branchCode")
+    public ResponseEntity<Branch> getBranchByBranchCode(@PathVariable String branchCode) {
+        return ResponseEntity.ok(branchService.getBranchByBranchCode(branchCode));
     }
 
     @GetMapping
