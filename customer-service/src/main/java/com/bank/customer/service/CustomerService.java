@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 
 @Service
@@ -27,10 +26,9 @@ public class CustomerService {
         if (!branchClient.isBranchExists(customerDto.getBranchCode())) {
             throw new RuntimeException("Invalid branch code: " + customerDto.getBranchCode());
         }
-        // Fetch the last customer number for the given branchCode
-        String lastCustomerNumber = customerRepository.findLastCustomerNumberByBranchCode(customerDto.getBranchCode());
+
         // Generate the next customer number
-        String nextCustomerNumber = generateNextCustomerNumber(customerDto.getBranchCode(), lastCustomerNumber);
+        String nextCustomerNumber = generateNextCustomerNumber(customerDto.getBranchCode());
 
         Customer customer = new Customer();
         customer.setCustomerNumber(nextCustomerNumber);
@@ -66,7 +64,11 @@ public class CustomerService {
         customerRepository.deleteById(id);
     }
 
-    private String generateNextCustomerNumber(String branchCode, String lastCustomerNumber) {
+    public String generateNextCustomerNumber(String branchCode) {
+
+        // Fetch the last customer number for the given branchCode
+        String lastCustomerNumber = customerRepository.findLastCustomerNumberByBranchCode(branchCode);
+
         int nextNumber = 1; // Default starting value if no customer exists yet
 
         if (lastCustomerNumber != null && lastCustomerNumber.startsWith(branchCode)) {
