@@ -1,6 +1,7 @@
 package com.bank.notificationservice.service;
 
 import com.bank.notificationservice.dto.DownService;
+import com.bank.notificationservice.event.AccountCreatedEvent;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +51,7 @@ public class EmailService {
         }
     }
 
-    public void sendEmail(List<DownService> downList)  {
+    public void sendEmailWhenListOfServicesDown(List<DownService> downList)  {
         try {
 
 
@@ -86,5 +87,57 @@ public class EmailService {
             throw new RuntimeException("Failed to send email");
         }
     }
+
+
+    public void sendCustomerOnBordEmail(String to)  {
+        try {
+            Context context = new Context();
+            String emailContent = templateEngine.process("customer-onborded", context);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name());
+
+            helper.setTo(to);
+            helper.setSubject("Welcome to MOHAN Bank");
+            helper.setText(emailContent, true); // Enable HTML content
+
+            mailSender.send(message);
+            log.info("Welcome Email sent successfully to {}", to);
+        } catch (MessagingException e) {
+            log.error("Failed to send email", e);
+            throw new RuntimeException("Failed to send email");
+        }
+    }
+
+
+    public void sendAccountCreationEmail(AccountCreatedEvent event)  {
+        try {
+            Context context = new Context();
+            String emailContent = templateEngine.process("account-created", context);
+
+            String html = emailContent.replace("{{customerName}}", event.getCustomerName())
+                    .replace("{{customerNumber}}", event.getCustomerNumber())
+                    .replace("{{accountNumber}}", event.getAccountNumber())
+                    .replace("{{accountType}}",event.getAccountType())
+                    .replace("{{branchName}}",event.getBranchCode())
+                    .replace("{{balance}}",String.valueOf(event.getBalance()));
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name());
+
+            helper.setTo(event.getCustomerMail());
+            helper.setSubject("Account Created");
+            helper.setText(html, true); // Enable HTML content
+
+            mailSender.send(message);
+            log.info("Account Creation Email sent successfully to {}", event.getCustomerMail());
+        } catch (MessagingException e) {
+            log.error("Failed to send email", e);
+            throw new RuntimeException("Failed to send email");
+        }
+    }
+
 
 }

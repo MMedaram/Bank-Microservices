@@ -11,7 +11,7 @@ public class CustomerCreatedProducer {
         Properties props = new Properties();
 
         // 1. Kafka broker
-        props.put("bootstrap.servers", "172.30.237.108:9092");
+        props.put("bootstrap.servers", "localhost:9092");
 
         // 2. Serialization
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");

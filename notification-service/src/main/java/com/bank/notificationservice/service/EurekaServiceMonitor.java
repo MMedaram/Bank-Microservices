@@ -49,7 +49,7 @@ public class EurekaServiceMonitor {
     }
 
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */59 * * * ?")
     public void check() {
 
         // 1. Get actual Eureka services
@@ -84,7 +84,7 @@ public class EurekaServiceMonitor {
 
         // 4. Send email only if something missing
         if (!downList.isEmpty()) {
-            emailService.sendEmail(downList);
+            emailService.sendEmailWhenListOfServicesDown(downList);
         }
     }
 

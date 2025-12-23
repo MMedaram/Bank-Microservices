@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Created Successfully</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family: Arial, Helvetica, sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8; padding:20px;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:6px; overflow:hidden;">
+
+                <!-- Header -->
+                <tr>
+                    <td style="background-color:#0b5ed7; color:#ffffff; padding:20px; text-align:center;">
+                        <h2 style="margin:0;">Welcome to ABC Bank</h2>
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td style="padding:25px; color:#333333;">
+                        <p style="font-size:14px;">Dear <strong>{{customerName}}</strong>,</p>
+
+                        <p style="font-size:14px;">
+                            We are pleased to inform you that your bank account has been successfully created.
+                            Below are your account details for reference:
+                        </p>
+
+                        <!-- Account Details Table -->
+                        <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse; margin-top:15px;">
+                            <tr style="background-color:#f1f3f5;">
+                                <td style="border:1px solid #dddddd;"><strong>Customer ID</strong></td>
+                                <td style="border:1px solid #dddddd;">{{customerNumber}}</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid #dddddd;"><strong>Account Number</strong></td>
+                                <td style="border:1px solid #dddddd;">{{accountNumber}}</td>
+                            </tr>
+                            <tr style="background-color:#f1f3f5;">
+                                <td style="border:1px solid #dddddd;"><strong>Account Type</strong></td>
+                                <td style="border:1px solid #dddddd;">{{accountType}}</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid #dddddd;"><strong>Branch</strong></td>
+                                <td style="border:1px solid #dddddd;">{{branchName}}</td>
+                            </tr>
+                            <tr style="background-color:#f1f3f5;">
+                                <td style="border:1px solid #dddddd;"><strong>Initial Balance</strong></td>
+                                <td style="border:1px solid #dddddd;">{{balance}}</td>
+                            </tr>
+                        </table>
+
+                        <p style="font-size:14px; margin-top:20px;">
+                            You can now start using your account for transactions and other banking services.
+                        </p>
+
+                        <p style="font-size:14px;">
+                            If you have any questions or require assistance, please contact our customer support team.
+                        </p>
+
+                        <p style="font-size:14px;">
+                            Regards,<br>
+                            <strong>MOHAN Bank Team</strong>
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="background-color:#f1f3f5; padding:15px; text-align:center; font-size:12px; color:#666666;">
+                        This is an automated message. Please do not reply to this email.<br>
+                        © 2025 MOHAN Bank. All rights reserved.
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

@@ -9,10 +9,10 @@ import java.util.Optional;
 
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
+
     Optional<Account> findByAccountNumber(String accountNumber);
 
-    @Query("SELECT a.accountNumber FROM Account a WHERE a.branchCode = :branchCode ORDER BY a.accountNumber DESC")
-    String findTopByBranchCodeOrderByAccountNumberDesc(String branchCode);
+    Account findTopByBranchCodeOrderByAccountNumberDesc(String branchCode);
 
     @Query("SELECT a FROM Account a WHERE a.customerNumber = :customerNumber")
     List<Account> findAllByCustomerNumber(String customerNumber);

@@ -5,6 +5,8 @@ import com.bank.account.entity.Account;
 import com.bank.account.entity.AccountDto;
 import com.bank.account.entity.AccountType;
 import com.bank.account.entity.CustomerDto;
+import com.bank.account.event.AccountCreatedEvent;
+import com.bank.account.event.AccountEventProducer;
 import com.bank.account.exception.AccountNotFoundException;
 import com.bank.account.repository.AccountRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,13 +26,16 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     @Autowired
+    private AccountEventProducer accountEventProducer;
+
+    @Autowired
     private CustomerClient customerClient;  // Link to Customer service
 
     public String generateAccountNumber(String branchCode, String customerNumber) {
         // Get the latest account number for the branch (for simplicity, query only the last account)
-        String lastAccountNumber = accountRepository.findTopByBranchCodeOrderByAccountNumberDesc(branchCode);
+        String lastAccountNumber = accountRepository.findTopByBranchCodeOrderByAccountNumberDesc(branchCode).getAccountNumber();
 
-        if (lastAccountNumber != null) {
+        if (null != lastAccountNumber) {
             // Extract the number part from last account number, assuming it's in the format customerNumber + "xxxx"
             String numberPart = lastAccountNumber.substring(customerNumber.length());
             int incrementedNumber = Integer.parseInt(numberPart) + 1;
@@ -62,10 +67,21 @@ public class AccountService {
         account.setCustomerNumber(accountDto.getCustomerNumber());
         account.setAccountType(AccountType.valueOf(accountDto.getAccountType()));
 
-        Account savedAccount = accountRepository.save(account);
+        Account saved = accountRepository.save(account);
 
-        log.info("Account created successfully with ID: {}", savedAccount.getId());
-        return savedAccount;
+        AccountCreatedEvent event = new AccountCreatedEvent();
+        event.setAccountNumber(saved.getAccountNumber());
+        event.setCustomerNumber(saved.getCustomerNumber());
+        event.setCustomerMail(customerDto.getEmail());
+        event.setCustomerName(customerDto.getName());
+        event.setAccountType(saved.getAccountType().name());
+        event.setBranchCode(saved.getBranchCode());
+        event.setBalance(saved.getBalance());
+
+        accountEventProducer.publishAccountCreated(event);
+
+        log.info("Account created successfully with ID: {}", saved.getId());
+        return saved;
     }
 
     public List<Account> getAllAccounts() {

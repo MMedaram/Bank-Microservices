@@ -4,6 +4,8 @@ import com.bank.customer.clinet.BranchClient;
 import com.bank.customer.entity.Customer;
 import com.bank.customer.entity.CustomerDto;
 import com.bank.customer.repository.CustomerRepository;
+import com.bank.customer.event.CustomerCreatedEvent;
+import com.bank.customer.event.CustomerEventProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +23,22 @@ public class CustomerService {
     @Autowired
     private BranchClient branchClient;
 
+    @Autowired
+    private CustomerEventProducer customerEventProducer;
+
+
     public Customer createCustomer(CustomerDto customerDto) {
-        // Validate branchCode by calling Branch Service
+
+        // 1️⃣ Validate branch
         if (!branchClient.isBranchExists(customerDto.getBranchCode())) {
-            throw new RuntimeException("Invalid branch code: " + customerDto.getBranchCode());
+            throw new RuntimeException("Invalid branch code: " + customerDto.getBranchCode()
+            );
         }
 
-        // Generate the next customer number
+        // 2️⃣ Generate customer number
         String nextCustomerNumber = generateNextCustomerNumber(customerDto.getBranchCode());
 
+        // 3️⃣ Create entity
         Customer customer = new Customer();
         customer.setCustomerNumber(nextCustomerNumber);
         customer.setName(customerDto.getName());
@@ -37,7 +46,21 @@ public class CustomerService {
         customer.setPhone(customerDto.getPhone());
         customer.setEmail(customerDto.getEmail());
 
-        return customerRepository.save(customer);
+        // 4️⃣ Save to DB (IMPORTANT: do this first)
+        Customer savedCustomer = customerRepository.save(customer);
+
+        // 5️⃣ Publish Kafka event (AFTER successful save)
+        CustomerCreatedEvent event = new CustomerCreatedEvent();
+        event.setCustomerNumber(savedCustomer.getCustomerNumber());
+        event.setName(savedCustomer.getName());
+        event.setEmail(savedCustomer.getEmail());
+        event.setPhone(savedCustomer.getPhone());
+        event.setBranchCode(savedCustomer.getBranchCode());
+
+        customerEventProducer.publishCustomerCreated(event);
+
+        // 6️⃣ Return response
+        return savedCustomer;
     }
 
     public List<Customer> getAllCustomers() {
