@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Funds Transfer Confirmation</title>
+</head>
+<body>
+
+<h2>Hello, <span th:text="${customerName}"></span>!</h2>
+
+<p>
+    Your fund transfer has been <strong>successfully completed</strong>.
+</p>
+
+<p>
+    <strong>Transaction ID:</strong>
+    <span th:text="${transactionId}"></span>
+</p>
+
+<p>
+    <strong>Transferred Amount:</strong>
+    <span th:text="${amount}"></span>
+</p>
+
+<p>
+    <strong>From Account:</strong>
+    <span th:text="${sourceAccountNumber}"></span>
+</p>
+
+<p>
+    <strong>To Account:</strong>
+    <span th:text="${destinationAccountNumber}"></span>
+</p>
+
+<p>
+    <strong>Transaction Date:</strong>
+    <span th:text="${transactionDate}"></span>
+</p>
+
+<p th:if="${description != null}">
+    <strong>Description:</strong>
+    <span th:text="${description}"></span>
+</p>
+
+<p>
+    Thank you for banking with us!
+</p>
+
+</body>
+</html>

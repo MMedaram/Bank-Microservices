@@ -49,13 +49,4 @@ public class NotificationConsumer {
 
     }
 
-
-
-    @KafkaListener(
-            topics = "account.transaction.v1",
-            groupId = "notification-service"
-    )
-    public void handleTransaction(AccountTransactionCompletedEvent event) {
-        // send SMS / push
-    }
 }

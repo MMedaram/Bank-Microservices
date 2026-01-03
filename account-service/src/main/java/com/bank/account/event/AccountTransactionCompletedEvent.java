@@ -1,15 +1,16 @@
-package com.bank.notificationservice.event;
+package com.bank.account.event;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-@Component
 @Data
+@Component
 public class AccountTransactionCompletedEvent {
     private String eventId;              // UUID
     private String transactionId;
+
     private String transactionType;      // CREDIT / DEBIT / TRANSFER
 
     private String sourceAccountNumber;
@@ -21,6 +22,4 @@ public class AccountTransactionCompletedEvent {
 
     private LocalDateTime transactionDate;
     private String description;
-
-    private LocalDateTime processedAt;
 }

@@ -2,6 +2,7 @@ package com.bank.notificationservice.service;
 
 import com.bank.notificationservice.dto.DownService;
 import com.bank.notificationservice.event.AccountCreatedEvent;
+import com.bank.notificationservice.event.AccountTransactionCompletedEvent;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class EmailService {
         try {
             Context context = new Context();
             context.setVariables(templateModel);
-            String emailContent = templateEngine.process("transaction-notification-email-template", context);
+            String emailContent = templateEngine.process("transaction-credit-debit", context);
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
@@ -50,6 +51,76 @@ public class EmailService {
             throw new RuntimeException("Failed to send email");
         }
     }
+
+    public void sendTransactionNotificationEmail(AccountTransactionCompletedEvent event)  {
+        try {
+            Map<String, Object> templateModel = getTemplateModel(event);
+            Context context = new Context();
+            context.setVariables(templateModel);
+
+            String emailContent = generateEmailContent(event, context);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name());
+
+            helper.setTo(MAIL);
+            helper.setSubject("Transaction Notification");
+            helper.setText(emailContent, true); // Enable HTML content
+
+            mailSender.send(message);
+            log.info("Transaction Email sent successfully to {}", MAIL);
+        } catch (MessagingException e) {
+            log.error("Failed to send Transaction email", e);
+            throw new RuntimeException("Failed to send Transaction email");
+        }
+    }
+
+    private Map<String, Object> getTemplateModel(AccountTransactionCompletedEvent event) {
+
+        return switch (event.getTransactionType()) {
+
+            case "CREDIT", "DEBIT" -> Map.of(
+                    "customerName", "Customer",
+                    "amount", event.getAmount(),
+                    "availableBalance", event.getSourceBalanceAfter(),
+                    "accountNumber", event.getSourceAccountNumber(),
+                    "transactionType", event.getTransactionType()
+            );
+
+            case "TRANSFER" -> Map.of(
+                    "customerName", "Customer",
+                    "transactionId", event.getTransactionId(),
+                    "amount", event.getAmount(),
+                    "sourceAccountNumber", event.getSourceAccountNumber(),
+                    "destinationAccountNumber", event.getDestinationAccountNumber(),
+                    "transactionDate", event.getTransactionDate(),
+                    "description", event.getDescription()
+            );
+
+            default -> throw new IllegalArgumentException(
+                    "Unsupported transaction type: " + event.getTransactionType()
+            );
+        };
+    }
+
+    private String generateEmailContent(AccountTransactionCompletedEvent event, Context context) {
+
+        return switch (event.getTransactionType()) {
+
+            case "CREDIT", "DEBIT" ->
+                    templateEngine.process("transaction-credit-debit", context);
+
+            case "TRANSFER" ->
+                    templateEngine.process("transaction-transfer-fund", context);
+
+            default ->
+                    throw new IllegalArgumentException(
+                            "Unsupported transaction type: " + event.getTransactionType()
+                    );
+        };
+    }
+
 
     public void sendEmailWhenListOfServicesDown(List<DownService> downList)  {
         try {

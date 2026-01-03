@@ -5,11 +5,16 @@ import com.bank.account.client.NotificationClient;
 import com.bank.account.entity.Account;
 import com.bank.account.entity.CustomerDto;
 import com.bank.account.entity.EmailRequestDto;
+import com.bank.account.entity.EventOutLog;
 import com.bank.account.entity.Transaction;
 import com.bank.account.entity.TransactionType;
+import com.bank.account.event.AccountTransactionCompletedEvent;
 import com.bank.account.exception.AccountNotFoundException;
 import com.bank.account.repository.AccountRepository;
+import com.bank.account.repository.EventOutLogRepository;
 import com.bank.account.repository.TransactionRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static com.bank.account.entity.TransactionType.TRANSFER;
 
@@ -32,6 +38,12 @@ public class TransactionService {
 
     @Autowired
     private NotificationClient notificationClient;
+
+    @Autowired
+    private EventOutLogRepository eventOutLogRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private CustomerClient customerClient;
@@ -58,12 +70,40 @@ public class TransactionService {
             }
             account.setBalance(account.getBalance() - amount);
         }
-        EmailRequestDto requestDto = prepareTransactionEmailRequest(account,transaction);
         accountRepository.save(account);
-        Transaction result = transactionRepository.save(transaction);
-        notificationClient.sendEmail(requestDto);
 
-        return result;
+        //EmailRequestDto requestDto = prepareTransactionEmailRequest(account,transaction);
+        //notificationClient.sendEmail(requestDto);
+
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        // 🔹 Build event
+        AccountTransactionCompletedEvent event = new AccountTransactionCompletedEvent();
+        event.setEventId(UUID.randomUUID().toString());
+        event.setTransactionId(savedTransaction.getId().toString());
+        event.setTransactionType(transactionType.name());
+        event.setSourceAccountNumber(accountNumber);
+        event.setAmount(amount);
+        event.setSourceBalanceAfter(account.getBalance());
+        event.setTransactionDate(savedTransaction.getTransactionDate());
+        event.setDescription(description);
+
+        // 🔹 Insert OUT log (same DB transaction)
+        EventOutLog outLog = new EventOutLog();
+        outLog.setEventId(event.getEventId());
+        outLog.setEventType("TRANSACTION_COMPLETED");
+        outLog.setAggregateType("ACCOUNT");
+        outLog.setAggregateId(accountNumber);
+        outLog.setTopicName("account.transaction.v1");
+        outLog.setPayload(event);
+
+        outLog.setStatus("NEW");
+        outLog.setRetryCount(0);
+        outLog.setCreatedAt(LocalDateTime.now());
+
+        eventOutLogRepository.save(outLog);
+
+        return savedTransaction;
     }
 
     @Transactional
@@ -93,8 +133,38 @@ public class TransactionService {
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setDescription("Transfer from Account " + sourceAccountNumber + " to Account " + destinationAccountNumber);
 
-        return transactionRepository.save(transaction);
+        Transaction saved = transactionRepository.save(transaction);
+
+        // 🔹 Build event
+        AccountTransactionCompletedEvent event = new AccountTransactionCompletedEvent();
+        event.setEventId(UUID.randomUUID().toString());
+        event.setTransactionId(saved.getId().toString());
+        event.setTransactionType("TRANSFER");
+        event.setSourceAccountNumber(sourceAccountNumber);
+        event.setDestinationAccountNumber(destinationAccountNumber);
+        event.setAmount(amount);
+        event.setSourceBalanceAfter(sourceAccount.getBalance());
+        event.setDestinationBalanceAfter(destinationAccount.getBalance());
+        event.setTransactionDate(saved.getTransactionDate());
+        event.setDescription(saved.getDescription());
+
+        // 🔹 OUT log
+        EventOutLog outLog = new EventOutLog();
+        outLog.setEventId(event.getEventId());
+        outLog.setEventType("TRANSACTION_COMPLETED");
+        outLog.setAggregateType("TRANSACTION");
+        outLog.setAggregateId(saved.getId().toString());
+        outLog.setTopicName("account.transaction.v1");
+        outLog.setPayload(event);
+        outLog.setStatus("NEW");
+        outLog.setRetryCount(0);
+        outLog.setCreatedAt(LocalDateTime.now());
+
+        eventOutLogRepository.save(outLog);
+
+        return saved;
     }
+
 
     public List<Transaction> getTransactionByAccountNumber(String accountNumber) {
 

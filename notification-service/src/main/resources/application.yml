@@ -4,6 +4,20 @@ server:
 spring:
   application:
     name: notification-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bank_db?currentSchema=notification
+    username: notification
+    password: notification
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 1
   mail:
     host: smtp.gmail.com
     port: 587
@@ -17,6 +31,15 @@ spring:
             enable: true
   kafka:
     bootstrap-servers: localhost:9092
+
+    retry:
+      topic:
+        enabled: true
+        attempts: 4                # 1 original + 3 retries
+        backoff:
+          delay: 5000              # 5 seconds
+          multiplier: 2.0          # exponential backoff
+          max-delay: 30000         # max 30 seconds
 
     consumer:
       group-id: notification-service

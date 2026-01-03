@@ -37,3 +37,11 @@ CREATE USER auth WITH PASSWORD 'auth';
 CREATE SCHEMA auth AUTHORIZATION auth;
 GRANT ALL ON SCHEMA auth TO auth;
 
+
+-- =========================
+-- notification Service Schema
+-- =========================
+CREATE USER notification WITH PASSWORD 'notification';
+CREATE SCHEMA notification AUTHORIZATION notification;
+GRANT ALL ON SCHEMA notification TO notification;
+

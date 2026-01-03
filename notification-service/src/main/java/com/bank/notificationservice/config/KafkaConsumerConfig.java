@@ -1,6 +1,7 @@
 package com.bank.notificationservice.config;
 
 import com.bank.notificationservice.event.AccountCreatedEvent;
+import com.bank.notificationservice.event.AccountTransactionCompletedEvent;
 import com.bank.notificationservice.event.CustomerCreatedEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
@@ -60,6 +62,36 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(accountCreatedConsumerFactory());
         return factory;
     }
+
+    @Bean
+    public ConsumerFactory<String, AccountTransactionCompletedEvent>   accountTransactionConsumerFactory() {
+
+        JsonDeserializer<AccountTransactionCompletedEvent> deserializer =   new JsonDeserializer<>(AccountTransactionCompletedEvent.class);
+
+        deserializer.addTrustedPackages("com.bank.*");
+        deserializer.setUseTypeHeaders(false);
+
+        ErrorHandlingDeserializer<AccountTransactionCompletedEvent> valueDeserializer =
+                new ErrorHandlingDeserializer<>(deserializer);
+
+        return new DefaultKafkaConsumerFactory<>(
+                consumerConfigs(),
+                new StringDeserializer(),
+                valueDeserializer
+        );
+    }
+
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, AccountTransactionCompletedEvent>   accountTransactionKafkaListenerContainerFactory() {
+
+        ConcurrentKafkaListenerContainerFactory<String, AccountTransactionCompletedEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+
+        factory.setConsumerFactory(accountTransactionConsumerFactory());
+        return factory;
+    }
+
 
     // common configs
     private Map<String, Object> consumerConfigs() {
