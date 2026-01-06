@@ -2,6 +2,7 @@ package com.branch.controller;
 
 import com.branch.entity.Branch;
 import com.branch.entity.BranchDTO;
+import com.branch.service.AsyncUseCase;
 import com.branch.service.BranchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +29,9 @@ public class BranchController {
 
     @Autowired
     private BranchService branchService;
+
+    @Autowired
+    private AsyncUseCase asyncUseCase;
 
 
     @Operation(summary = "Create a new branch", description = "Create a new branch with given details")
@@ -65,5 +69,14 @@ public class BranchController {
     @Operation(summary = "Search branch", description = "Checking a branch is available or not by branchCode")
     public boolean isBranchExists(@PathVariable String branchCode) {
         return branchService.isBranchExists(branchCode);
+    }
+
+    @GetMapping("/async")
+    @Operation(summary = "Async Test", description = "Checking a async feature")
+    public String sendMail() {
+
+        asyncUseCase.sendEmail("mohan@gmai.com");
+
+        return "OK";
     }
 }
