@@ -32,3 +32,40 @@ eureka:
       defaultZone: http://localhost:8080/eureka/
   instance:
     prefer-ip-address: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      customerService:
+        registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        ignoreExceptions:
+          - jakarta.persistence.EntityNotFoundException
+  retry:
+    instances:
+      customerService:
+        maxAttempts: 3
+        waitDuration: 500ms
+        retryExceptions:
+          - feign.FeignException
+          - feign.RetryableException
+        ignoreExceptions:
+          - jakarta.persistence.EntityNotFoundException
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,circuitbreakers,circuitbreakerevents
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true

@@ -1,6 +1,5 @@
 package com.bank.account.service;
 
-import com.bank.account.client.CustomerClient;
 import com.bank.account.client.NotificationClient;
 import com.bank.account.entity.Account;
 import com.bank.account.entity.CustomerDto;
@@ -46,7 +45,7 @@ public class TransactionService {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CustomerClient customerClient;
+    private CustomerLookupService customerLookupService;
 
     @Transactional
     public Transaction createTransaction(String accountNumber, Double amount, TransactionType transactionType, String description) {
@@ -189,7 +188,7 @@ public class TransactionService {
         emailRequestDto.setAvailableBalance(String.valueOf(account.getBalance()));
         emailRequestDto.setAmount(String.valueOf(transaction.getAmount()));
 
-        CustomerDto dto = customerClient.getCustomerByCustomerNumber(account.getCustomerNumber());
+        CustomerDto dto = customerLookupService.getCustomerByCustomerNumber(account.getCustomerNumber());
 
         emailRequestDto.setTo(dto.getEmail());
         emailRequestDto.setCustomerName(dto.getName());

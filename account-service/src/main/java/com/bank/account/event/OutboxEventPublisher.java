@@ -52,8 +52,4 @@ public class OutboxEventPublisher {
         }
     }
 
-    @Scheduled(fixedDelay = 5000)
-    public void publishOutbox() {
-        publishPendingEvents();
-    }
 }

@@ -3,10 +3,12 @@ package com.bank.customer.service;
 import com.bank.customer.clinet.BranchClient;
 import com.bank.customer.entity.Customer;
 import com.bank.customer.entity.CustomerDto;
-import com.bank.customer.repository.CustomerRepository;
 import com.bank.customer.event.CustomerCreatedEvent;
 import com.bank.customer.event.CustomerEventProducer;
+import com.bank.customer.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
@@ -103,6 +105,18 @@ public class CustomerService {
         // Format the next number to 4 digits (e.g., 0001, 0002, etc.)
         DecimalFormat format = new DecimalFormat("0000");
         return branchCode + format.format(nextNumber);
+    }
+
+
+    public Page<Customer> getAllCustomersByBranchCode(String branchCode, Pageable pageable ){
+
+        return customerRepository.findByBranchCode(branchCode, pageable);
+    }
+
+
+    public Page<Customer> getAllCustomers(Pageable pageable){
+
+        return customerRepository.findAll(pageable);
     }
 
 

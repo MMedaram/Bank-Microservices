@@ -1,6 +1,5 @@
 package com.bank.account.service;
 
-import com.bank.account.client.CustomerClient;
 import com.bank.account.entity.Account;
 import com.bank.account.entity.AccountDto;
 import com.bank.account.entity.AccountType;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 
 @Service
@@ -29,7 +29,7 @@ public class AccountService {
     private AccountEventProducer accountEventProducer;
 
     @Autowired
-    private CustomerClient customerClient;  // Link to Customer service
+    private CustomerLookupService customerLookupService;  // Link to Customer service
 
     public String generateAccountNumber(String branchCode, String customerNumber) {
         // Get the latest account number for the branch (for simplicity, query only the last account)
@@ -52,11 +52,7 @@ public class AccountService {
         String customerNumber = accountDto.getCustomerNumber();
         log.info("Creating account for customer : {}", customerNumber);
 
-        CustomerDto customerDto = customerClient.getCustomerByCustomerNumber(customerNumber);
-        if (customerDto == null) {
-            log.error("Customer not found with customerNumber : {}", customerNumber);
-            throw new EntityNotFoundException("Customer not found with customerNumber: " + customerNumber);
-        }
+        CustomerDto customerDto = customerLookupService.getCustomerByCustomerNumber(customerNumber);
 
         String accountNumber = generateAccountNumber(accountDto.getBranchCode(), accountDto.getCustomerNumber());
 
@@ -66,7 +62,7 @@ public class AccountService {
         account.setBranchCode(accountDto.getBranchCode());
         account.setCustomerNumber(accountDto.getCustomerNumber());
         account.setAccountType(AccountType.valueOf(accountDto.getAccountType()));
-
+        IntStream.range(0,100).boxed().toList();
         Account saved = accountRepository.save(account);
 
         AccountCreatedEvent event = new AccountCreatedEvent();

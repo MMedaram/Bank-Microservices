@@ -43,3 +43,12 @@ logging:
   level:
     org.springframework.cache: TRACE
     org.hibernate.SQL: OFF
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,beans,env,loggers,mappings
+    health:
+      show-details: always

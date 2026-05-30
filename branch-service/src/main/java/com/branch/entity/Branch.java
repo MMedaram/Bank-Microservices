@@ -22,6 +22,17 @@ public class Branch {
     @NotNull(message = "Address is required")
     private String address;
 
+    public Branch(Long id, String name, String branchCode, String address) {
+        this.id = id;
+        this.name = name;
+        this.branchCode = branchCode;
+        this.address = address;
+    }
+
+    public Branch() {
+    }
+
+
     public Long getId() {
         return id;
     }

@@ -7,6 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -59,5 +64,27 @@ public class CustomerController {
         customerService.deleteCustomer(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @Operation(summary = "Get All customers with Pagination")
+    @GetMapping("/pagination/")
+    public Page<Customer> getCustomersWithPagination(@RequestParam int page, @RequestParam int size, @RequestParam String sortBy) {
+
+        Pageable pageable =  PageRequest.of(page, size, Sort.by(sortBy).ascending());
+
+        return customerService.getAllCustomers(pageable);
+    }
+
+
+    @Operation(summary = "Get All customers by branchCode with Pagination")
+    @GetMapping("/branch/")
+    public Page<Customer> getAllCustomersByBranchCode(@RequestParam String branchCode, @RequestParam int page, @RequestParam int size) {
+
+        Pageable pageable =  PageRequest.of(page, size);
+
+        return customerService.getAllCustomersByBranchCode(branchCode, pageable);
+    }
+
+
 
 }
