@@ -1,0 +1,101 @@
+=========================Apache Kafka Installation & Setup (KRaft Mode – No ZooKeeper)=================
+
+====================1. Prerequisite Check – Java====================
+
+Verify whether Java is installed:
+
+    java -version
+
+If Java is not installed, install OpenJDK 17:
+
+    sudo apt update
+    sudo apt install openjdk-17-jdk -y
+
+====================2. Download Apache Kafka====================
+
+Download Kafka 3.8.0:
+
+    wget https://downloads.apache.org/kafka/3.8.0/kafka_2.13-3.8.0.tgz
+
+====================3. Extract Kafka & Navigate to Directory====================
+    tar -xzf kafka_2.13-3.8.0.tgz
+    cd kafka_2.13-3.8.0
+
+====================4. Start ZooKeeper in background====================
+
+nohup bin/zookeeper-server-start.sh config/zookeeper.properties > zookeeper.log 2>&1 &
+
+start cmd /k bin\windows\zookeeper-server-start.bat config\zookeeper.properties
+
+====================5. Start Kafka in Background====================
+Run Kafka in the background and redirect logs:
+    nohup bin/kafka-server-start.sh config/server.properties > kafka.log 2>&1 &
+
+start cmd /k bin\windows\kafka-server-start.bat config\server.properties
+
+
+====================6. Verify Kafka Is Running====================
+
+Navigate to Kafka home directory (if not already there):
+    cd ~/kafka_2.13-3.8.0
+Verify broker availability:
+
+    bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092
+
+If Kafka is running successfully, broker details will be displayed.
+
+====================7. Create Kafka Topics (Business Events)====================
+7.1 Customer Created Event
+
+bin/kafka-topics.sh --create \
+  --topic customer.created.v1 \
+  --bootstrap-server localhost:9092 \
+  --partitions 3 \
+  --replication-factor 1
+
+7.2 Account Created Event
+
+bin/kafka-topics.sh --create \
+  --topic account.created.v1 \
+  --bootstrap-server localhost:9092 \
+  --partitions 3 \
+  --replication-factor 1
+
+7.3 Account Transaction Event
+
+bin/kafka-topics.sh --create \
+  --topic account.transaction.v1 \
+  --bootstrap-server localhost:9092 \
+  --partitions 3 \
+  --replication-factor 1
+
+====================8. List Topics (Verification)====================
+bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+
+Expected Output:
+    account.created.v1
+    account.transaction.v1
+    customer.created.v1
+
+====================9. Produce Test Event (CLI)====================
+
+Start producer:
+
+    bin/kafka-console-producer.sh \
+      --topic customer.created.v1 \
+      --bootstrap-server localhost:9092
+
+Enter sample message:
+        {"customerId":"C123","name":"Mohan","email":"mohan@test.com"}
+
+====================10. Consume Event (CLI)====================
+
+Start consumer:
+
+    bin/kafka-console-consumer.sh \
+      --topic customer.created.v1 \
+      --from-beginning \
+      --bootstrap-server localhost:9092
+
+Expected Output:
+        {"customerId":"C123","name":"Mohan","email":"mohan@test.com"}

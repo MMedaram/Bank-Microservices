@@ -1,0 +1,24 @@
+===========Install Redis INSIDE WSL (Linux)=============
+sudo apt update
+sudo apt install redis-server -y
+
+================Start Redis=====================
+redis-server
+
+================Check Redis service status=============
+sudo service redis-server status
+
+
+
+
+======================= Spring boot will be client ======
+
+Add Redis Dependency
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+
+@Cacheable(value = "branchCache", key = "'branch:' + #branchCode")
+
